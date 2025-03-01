@@ -1,7 +1,7 @@
 # plagin.py Documentation
 
 **Version:** 1.1.0
-**Last Updated:** 2023-10-27
+**Last Updated:** 2025-03-01
 **Author:** Sioxty
 
 **Description:** `plagin.py` is a Python module providing file management functionalities. It allows for moving and deleting files based on their extensions. The module uses the `logging` module for recording actions and handles potential errors gracefully.  It includes improved error handling and file renaming to prevent overwrites.

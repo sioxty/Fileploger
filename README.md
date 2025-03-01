@@ -1,6 +1,6 @@
 # FilePloger: A Python File Management Plugin
 
-**Version:** 1.0.0
+**Version:** 1.1.0
 
 **Author:** Sioxty
 
@@ -21,7 +21,7 @@ FilePloger is a simple yet powerful Python plugin designed for efficient file ma
 
 ## Installation:
 
-1.  **Clone the repository:** `git clone <repository_url>`
+1.  **Clone the repository:** `git clone https://github.com/sioxty/Fileploger/tree/main`
 2.  **Navigate to the directory:** `cd FilePloger`
 
 

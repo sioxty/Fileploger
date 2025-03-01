@@ -130,9 +130,12 @@ update_preset_button.grid(row=row_num + 1, column=0)
 load_preset_button = tk.Button(root, text="Load Preset", command=load_preset)
 load_preset_button.grid(row=row_num + 1, column=1)
 
-if __name__ == "__main__":
+def main():
     try:
         logger.info(f"Program is running...")
         root.mainloop()
     except Exception as e:
         logger.exception(f"Unhandled exception occurred: {e}")
+
+if __name__ == "__main__":
+    main()
