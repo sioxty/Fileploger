@@ -47,3 +47,6 @@ print(f"Moved files: {moved_files}")
 
 # Delete .tmp files
 file_manager.delete(['.tmp'])
+```
+
+[Documentation](doc.md)

@@ -27,8 +27,8 @@ class FileManager:
             files = self.__sort_extension(extensions)
             if not files:
                 logger.info(f"No files found with specified extensions in {self.src_dir}")
-                return []
-            
+                return 0  # Повертаємо 0, якщо немає файлів
+                
             os.makedirs(dest_dir, exist_ok=True)  # Створюємо директорію, якщо її немає
 
             moved_files = []
@@ -52,7 +52,7 @@ class FileManager:
                 moved_files.append(dest_path)
 
             logger.info(f"Moved {len(moved_files)} files to {dest_dir}")
-            return moved_files
+            return len(moved_files)  # Повертаємо кількість переміщених файлів
         
         except (FileNotFoundError, shutil.Error) as e:  
             logger.error(f"Error moving files: {e}", exc_info=True)

@@ -7,7 +7,7 @@ from plagin import FileManager, TypeFile
 
 PRESET_FILE = "settings/presets.json"
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger("FileManager")
 
 FILE_TYPES = {
@@ -39,16 +39,17 @@ def process_files():
 
     try:
         fm = FileManager(source_dir)
+        moved_count = 0
         for file_type, data in FILE_TYPES.items():
             if data["var"].get():
                 dest_dir = data["entry"].get()
                 if dest_dir:
-                    fm.move(dest_dir, typeFile.get_extensions(file_type))
+                    moved_count += fm.move(dest_dir, typeFile.get_extensions(file_type))
                 else:
                     messagebox.showerror("Error", f"Please select a destination directory for {data['label']}")
                     return
 
-        messagebox.showinfo("Success", "Files processed successfully.")
+        messagebox.showinfo("Success", f"Files processed successfully ({moved_count} files moved)")
     except FileNotFoundError:
         messagebox.showerror("Error", f"Source directory '{source_dir}' not found.")
     except Exception as e:
@@ -88,9 +89,10 @@ def load_preset():
 
 def enable_save_button():
     update_preset_button["state"] = "normal"
-
+    
 root = tk.Tk()
 root.title("File Manager")
+root.iconbitmap("icon.ico") 
 
 # Source Directory
 source_dir_label = tk.Label(root, text="Source Directory:")
@@ -130,6 +132,7 @@ load_preset_button.grid(row=row_num + 1, column=1)
 
 if __name__ == "__main__":
     try:
+        logger.info(f"Program is running...")
         root.mainloop()
     except Exception as e:
         logger.exception(f"Unhandled exception occurred: {e}")
