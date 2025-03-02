@@ -1,5 +1,9 @@
 from cx_Freeze import setup, Executable
 
+#init presets 
+with open('settings/presets.json', 'r', encoding='utf-8') as file:
+    pass
+
 options = {
     "build_exe": {
         "include_files": ["icon.ico", "settings/"],  # Додай сюди всі необхідні файли та папки

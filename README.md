@@ -23,7 +23,7 @@ FilePloger is a simple yet powerful Python plugin designed for efficient file ma
 
 1.  **Clone the repository:** `git clone https://github.com/sioxty/Fileploger/tree/main`
 2.  **Navigate to the directory:** `cd FilePloger`
-
+3. **[Install winwows amd64](installer/Output/Fileploger.exe)**
 
 ## Usage:
 
