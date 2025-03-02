@@ -14,7 +14,7 @@ class TypeFile:
             logger.error(f"Error loading extension configuration: {e}")
             self.extensions = {}  # Default to empty if error
 
-    def get_extensions(self, file_type):
+    def get_extensions(self, file_type:str)->list:
         return self.extensions.get(file_type, [])
 
 
@@ -22,7 +22,7 @@ class FileManager:
     def __init__(self, src_dir: str):
         self.src_dir = src_dir
 
-    def move(self, dest_dir: str, extensions):
+    def move(self, dest_dir: str, extensions)->int:
         try:
             files = self.__sort_extension(extensions)
             if not files:
@@ -59,15 +59,17 @@ class FileManager:
             raise  # Повторно кидаємо виняток після логування
 
 
-    def delete(self, extensions):
+    def delete(self, extensions: list)->int:
         try:
             files = self.__sort_extension(extensions)
             if files:
                 for file in files:
                     os.remove(os.path.join(self.src_dir, file))
                 logger.info(f"Deleted {len(files)} files")
+                return len(files)  # Повертаємо кількість видалених файлів
             else:
                 logger.info(f"No files found with specified extensions in {self.src_dir}")
+                return 0  # Повертаємо 0, якщо немає файлів
         except (FileNotFoundError, OSError) as e:  # Catch specific exceptions
             logger.error(f"Error deleting files: {e}")
             raise  # Re-raise after logging
@@ -82,7 +84,7 @@ class FileManager:
                     break  # Avoid adding the same file multiple times
         return result
     
-    def __get_unique_filename(self, dest_dir, filename):
+    def __get_unique_filename(self, dest_dir: str, filename:str) -> str:
         base, ext = os.path.splitext(filename)
         i = 1
         while True:

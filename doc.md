@@ -1,7 +1,7 @@
 # plagin.py Documentation
 
-**Version:** 1.1.0
-**Last Updated:** 2025-03-01
+**Version:** 1.2.0
+**Last Updated:** 2025-03-02
 **Author:** Sioxty
 
 **Description:** `plagin.py` is a Python module providing file management functionalities. It allows for moving and deleting files based on their extensions. The module uses the `logging` module for recording actions and handles potential errors gracefully.  It includes improved error handling and file renaming to prevent overwrites.
@@ -26,14 +26,38 @@ This plugin simplifies file operations, categorizing files by extension and enab
 
 ### 2.1 `TypeFile`
 
-This class manages file extension configurations loaded from a JSON file (`settings/ext.json`). It's used internally by `FileManager` to determine which files match specified file types.
+The `TypeFile` class manages file extension configurations loaded from a JSON file (`settings/ext.json`). It is used to retrieve file extensions based on file types.
 
-*   **Constructor (`__init__(self, config_file="settings/ext.json")`)**
-    *   `config_file` (str, optional): The path to the JSON configuration file. Defaults to "settings/ext.json". The JSON file should contain a dictionary where keys represent file types (e.g., "document", "image") and values are lists of file extensions (e.g., `["txt", "pdf"]`).  If the file is not found or is invalid JSON, a default empty dictionary is used.
+#### Constructor (`__init__(self, config_file="settings/ext.json")`)
+- **Arguments:**
+  - `config_file` (str, optional): The path to the JSON configuration file. Defaults to `"settings/ext.json"`. The JSON file should contain a dictionary where keys represent file types (e.g., `"images"`, `"documents"`) and values are lists of file extensions (e.g., `[".jpg", ".png"]`).
+  - If the file is not found or is invalid JSON, the class defaults to an empty dictionary (`{}`).
 
-*   **Methods:**
-    *   `get_extensions(self, file_type)`: Returns a list of file extensions associated with the given `file_type` from the configuration file. Returns an empty list if the `file_type` is not found or if there's an error reading the configuration file.
+#### Methods:
+- **`get_extensions(self, file_type)`**
+  - **Arguments:**
+    - `file_type` (str): The type of file (e.g., `"images"`, `"documents"`, `"music"`).
+  - **Returns**:
+    - A list of file extensions (list) associated with the specified `file_type`. If the `file_type` is not found or there's an error, it returns an empty list.
 
+#### Example Usage:
+
+```python
+# Initialize the TypeFile object
+file_types = TypeFile("settings/ext.json")
+
+# Get extensions for images
+image_extensions = file_types.get_extensions("images")
+print(image_extensions)  # Output: [".jpg", ".jpeg", ".png", ".gif", ".bmp"]
+
+# Get extensions for documents
+document_extensions = file_types.get_extensions("documents")
+print(document_extensions)  # Output: [".pdf", ".docx", ".doc", ".txt", ".rtf"]
+
+# Get extensions for an unknown type
+unknown_extensions = file_types.get_extensions("unknown")
+print(unknown_extensions)  # Output: []
+```
 
 ### 2.2 `FileManager`
 
@@ -61,11 +85,13 @@ import logging
 # Configure logging (optional, but recommended)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
+type_file = plagin.TypeFile()
+
 # Create a FileManager object
 file_manager = plagin.FileManager("path/to/your/source/directory")
 
 # Move .txt files to a new directory
-moved_count = file_manager.move("path/to/your/destination/directory", ['.txt'])
+moved_count = file_manager.move("path/to/your/destination/directory", type_file.get_extensions("documents"))
 print(f"Moved {moved_count} files.")
 
 # Delete .tmp files

@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import logging
-import os
 import json
 from plagin import FileManager, TypeFile
 
@@ -19,26 +18,32 @@ FILE_TYPES = {
 }
 
 def browse_source_dir():
+    logger.debug("browse source director")
     directory = filedialog.askdirectory()
     source_dir_entry.delete(0, tk.END)
     source_dir_entry.insert(0, directory)
     enable_save_button()
 
 def browse_dest_dir(file_type):
+    logger.debug("browse dest director")
     directory = filedialog.askdirectory()
     FILE_TYPES[file_type]["entry"].delete(0, tk.END)
     FILE_TYPES[file_type]["entry"].insert(0, directory)
     enable_save_button()
 
 def process_files():
+    logger.debug("process files")
     source_dir = source_dir_entry.get()
     typeFile = TypeFile()
     if not source_dir:
         messagebox.showerror("Error", "Please select a source directory.")
         return
-
+    
+    fm = FileManager(source_dir)
+    if delete_var.get():
+        deleted_count = fm.delete("executables")
+    
     try:
-        fm = FileManager(source_dir)
         moved_count = 0
         for file_type, data in FILE_TYPES.items():
             if data["var"].get():
@@ -49,18 +54,20 @@ def process_files():
                     messagebox.showerror("Error", f"Please select a destination directory for {data['label']}")
                     return
 
-        messagebox.showinfo("Success", f"Files processed successfully ({moved_count} files moved)")
+        messagebox.showinfo("Success", f"Files processed successfully ({moved_count} files moved, {deleted_count} files deleted)")
+
     except FileNotFoundError:
         messagebox.showerror("Error", f"Source directory '{source_dir}' not found.")
     except Exception as e:
         messagebox.showerror("Error", f"An error occurred: {e}")
 
-
 def save_preset():
+    logger.info("save preset")
     preset = {
         "source_dir": source_dir_entry.get(),
         **{file_type: {"dest": data["entry"].get(), "selected": data["var"].get()} for file_type, data in FILE_TYPES.items()}
     }
+    preset["delete_after_move"] = delete_var.get()
     try:
         with open(PRESET_FILE, "w",encoding='utf-8') as f:
             json.dump(preset, f, indent=4)
@@ -68,13 +75,14 @@ def save_preset():
     except Exception as e:
         messagebox.showerror("Error", f"Error saving preset: {e}")
 
-
 def load_preset():
+    logger.info("load preset")
     try:
         with open(PRESET_FILE, "r") as f:
             preset = json.load(f)
             source_dir_entry.delete(0, tk.END)
             source_dir_entry.insert(0, preset["source_dir"])
+            delete_var.set(preset.get("delete_after_move", False))
             for file_type, data in FILE_TYPES.items():
                 data["var"].set(preset[file_type]["selected"])
                 data["entry"].delete(0, tk.END)
@@ -91,7 +99,7 @@ def enable_save_button():
     update_preset_button["state"] = "normal"
     
 root = tk.Tk()
-root.title("File Manager")
+root.title("File ploger")
 root.iconbitmap("icon.ico") 
 
 # Source Directory
@@ -107,7 +115,6 @@ delete_var = tk.BooleanVar()
 delete_checkbox = tk.Checkbutton(root, text="Delete files after move", variable=delete_var)
 delete_checkbox.grid(row=100, column=0, sticky="w")
 
-
 row_num = 1
 for file_type, data in FILE_TYPES.items():
     data["var"] = tk.BooleanVar()
@@ -119,7 +126,6 @@ for file_type, data in FILE_TYPES.items():
     browse_button.grid(row=row_num, column=2)
     row_num += 1
 
-
 # Process Button
 process_button = tk.Button(root, text="Process Files", command=process_files)
 process_button.grid(row=row_num, column=1)
@@ -130,10 +136,15 @@ update_preset_button.grid(row=row_num + 1, column=0)
 load_preset_button = tk.Button(root, text="Load Preset", command=load_preset)
 load_preset_button.grid(row=row_num + 1, column=1)
 
-def main():
+def main(level_debag : logging = logging.INFO ):
+    logging.basicConfig(level=level_debag, format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    logger = logging.getLogger("FileManager")
+    
     try:
         logger.info(f"Program is running...")
         root.mainloop()
+    except KeyboardInterrupt:
+        logger.info("Program interrupted by user.")
     except Exception as e:
         logger.exception(f"Unhandled exception occurred: {e}")
 
